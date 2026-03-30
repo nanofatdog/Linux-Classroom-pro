@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux Classroom Pro - Interactive Learning Platform</title>
+    
+    <!-- Load Xterm.js library and addons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Variables - Modern Color Palette */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --text-accent: #60a5fa;
+            
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            
+            --sidebar-width: 480px;
+            --header-height: 70px;
+            --footer-height: 50px;
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --border-radius-lg: 16px;
+            
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+        
+        /* Light Theme Variables */
+        .light-theme {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --bg-card: rgba(0, 0, 0, 0.03);
+            
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --text-accent: #3b82f6;
+            
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+        
+        /* Container Layout */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Sidebar - Premium Design */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100%;
+            background: var(--bg-secondary);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 100;
+            box-shadow: 5px 0 25px var(--shadow-color);
+            transition: transform var(--transition-normal), width var(--transition-normal);
+            border-right: 1px solid var(--border-color);
+        }
+        
+        .sidebar-header {
+            padding: 25px;
+            background: var(--primary-gradient);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            animation: shimmer 3s infinite linear;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .logo-text h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, #fff 0%, #e2e8f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-text p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+        }
+        
+        /* Sidebar Tabs - Modern Design */
+        .sidebar-tabs {
+            display: flex;
+            background: var(--bg-tertiary);
+            padding: 10px;
+            gap: 5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 14px 0;
+            background: transparent;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+        
+        .tab-button:hover::before {
+            left: 100%;
+        }
+        
+        .tab-button:hover {
+            color: var(--text-primary);
+            background: var(--bg-card);
+            transform: translateY(-1px);
+        }
+        
+        .tab-button.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .tab-button i {
+            font-size: 1.1rem;
+        }
+        
+        /* Tab Content Area */
+        .tab-content-container {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            background: var(--bg-secondary);
+        }
+        
+        .tab-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 25px;
+            overflow-y: auto;
+            display: none;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity var(--transition-normal), transform var(--transition-normal);
+        }
+        
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        /* Lessons Tab */
+        .lesson-header {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .lesson-header h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+        
+        .lesson-progress {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-gradient);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .lesson-nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-button {
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-button:hover {
+            background: var(--bg-tertiary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .lesson-content {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+        
+        .lesson-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .lesson-title i {
+            color: var(--text-accent);
+        }
+        
+        .lesson-body {
+            line-height: 1.7;
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .lesson-body p {
+            margin-bottom: 15px;
+        }
+        
+        .lesson-body code {
+            font-family: 'Fira Code', monospace;
+            background: var(--bg-tertiary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: var(--text-accent);
+            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .lesson-body pre {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: var(--border-radius-sm);
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid var(--border-color);
+        }
+        
+        .lesson-body pre code {
+            background: transparent;
+            padding: 0;
+            border: none;
+            color: var(--text-secondary);
+        }
+        
+        /* Help Tab - Card Grid */
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .help-card {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+        
+        .help-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--text-accent);
+            box-shadow: 0 10px 25px var(--shadow-color);
+        }
+        
+        .help-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .help-card-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .help-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .help-card-description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .help-card-command {
+            font-family: 'Fira Code', monospace;
+            background: var(--bg-tertiary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--text-accent);
+            border: 1px solid var(--border-color);
+            display: block;
+            overflow-x: auto;
+        }
+        
+        /* Quick Commands Tab */
+        .command-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .command-item {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 18px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all var(--transition-fast);
+            backdrop-filter: blur(10px);
+        }
+        
+        .command-item:hover {
+            transform: translateX(5px);
+            border-color: var(--text-accent);
+        }
+        
+        .command-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .command-content {
+            flex: 1;
+        }
+        
+        .command-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+        
+        .command-description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        .command-action {
+            flex-shrink: 0;
+        }
+        
+        .copy-button {
+            padding: 10px 18px;
+            background: var(--success-gradient);
+            border: none;
+            border-radius: var(--border-radius-sm);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .copy-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(67, 233, 123, 0.3);
+        }
+        
+        /* Terminal Area - Premium Design */
+        .terminal-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .terminal-header {
+            height: var(--header-height);
+            background: var(--bg-secondary);
+            padding: 0 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 10;
+        }
+        
+        .terminal-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .terminal-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .status-indicator.disconnected {
+            background: #ef4444;
+            animation: none;
+        }
+        
+        .terminal-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .control-button {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .control-button:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+        
+        .control-button.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .xterm-container {
+            flex: 1;
+            padding: 25px;
+            position: relative;
+        }
+        
+        .xterm-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px var(--border-color);
+        }
+        
+        .terminal-footer {
+            height: var(--footer-height);
+            background: var(--bg-secondary);
+            padding: 0 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .shortcut-hints {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .shortcut-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .shortcut-key {
+            background: var(--bg-tertiary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--text-accent);
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Sidebar Toggle */
+        .sidebar-toggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: var(--border-radius);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 200;
+            transition: all var(--transition-fast);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+        
+        .sidebar-hidden .sidebar {
+            transform: translateX(calc(-1 * var(--sidebar-width)));
+        }
+        
+        .sidebar-hidden .sidebar-toggle {
+            left: 20px;
+        }
+        
+        /* Welcome Modal */
+        .welcome-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            opacity: 1;
+            transition: opacity var(--transition-slow);
+        }
+        
+        .welcome-modal.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius-lg);
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            transform: translateY(0);
+            transition: transform var(--transition-slow);
+        }
+        
+        .welcome-modal.hidden .modal-content {
+            transform: translateY(50px);
+        }
+        
+        .modal-header {
+            padding: 30px;
+            background: var(--primary-gradient);
+            text-align: center;
+        }
+        
+        .modal-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+        
+        .welcome-step {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .welcome-step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .step-content h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+        
+        .step-content p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .modal-footer {
+            padding: 25px 30px;
+            background: var(--bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .skip-button {
+            padding: 12px 25px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .skip-button:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        
+        .start-button {
+            padding: 12px 30px;
+            background: var(--success-gradient);
+            border: none;
+            border-radius: var(--border-radius);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(67, 233, 123, 0.3);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            :root {
+                --sidebar-width: 400px;
+            }
+            
+            .help-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: absolute;
+            }
+            
+            .help-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .shortcut-hints {
+                display: none;
+            }
+            
+            .terminal-controls {
+                gap: 5px;
+            }
+            
+            .control-button {
+                width: 36px;
+                height: 36px;
+            }
+        }
+        
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-card);
+            border-radius: 5px;
+            border: 2px solid var(--bg-tertiary);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-accent);
+        }
+        
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 200;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .theme-toggle:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            transform: rotate(30deg);
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Modal -->
+    <div class="welcome-modal" id="welcomeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-rocket"></i> Welcome to Linux Classroom Pro</h2>
+                <p>Your journey to mastering Linux starts here!</p>
+            </div>
+            <div class="modal-body">
+                <div class="welcome-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Interactive Terminal Environment</h4>
+                        <p>Experience a full Linux terminal in your browser. Practice real commands with instant feedback. Your environment is isolated and safe for experimentation.</p>
+                    </div>
+                </div>
+                <div class="welcome-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Structured Learning Path</h4>
+                        <p>Follow our curated lessons from basic commands to advanced programming. Each lesson includes practical examples you can try immediately in the terminal.</p>
+                    </div>
+                </div>
+                <div class="welcome-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Smart Assistance Tools</h4>
+                        <p>Use our intelligent help system with categorized commands, one-click copying, and contextual suggestions. Never get stuck with the right tools at your fingertips.</p>
+                    </div>
+                </div>
+                <div class="welcome-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Collaborative Learning</h4>
+                        <p>Connect with classmates, share files, and work together in a secure environment. Perfect for classroom settings and collaborative projects.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="skip-button" id="skipWelcome">
+                    Skip Introduction
+                </button>
+                <button class="start-button" id="startLearning">
+                    <i class="fas fa-play-circle"></i> Start Learning
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main App Container -->
+    <div class="app-container" id="appContainer">
+        <!-- Sidebar Toggle -->
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars" id="sidebarToggleIcon"></i>
+        </button>
+        
+        <!-- Theme Toggle -->
+        <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Sidebar Header -->
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-terminal"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>Linux Classroom Pro</h1>
+                        <p>Interactive Learning Platform</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar Tabs -->
+            <div class="sidebar-tabs">
+                <button class="tab-button active" data-tab="lessons">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Lessons</span>
+                </button>
+                <button class="tab-button" data-tab="help">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help</span>
+                </button>
+                <button class="tab-button" data-tab="commands">
+                    <i class="fas fa-bolt"></i>
+                    <span>Quick Commands</span>
+                </button>
+                <button class="tab-button" data-tab="tools">
+                    <i class="fas fa-tools"></i>
+                    <span>Student Tools</span>
+                </button>
+            </div>
+            
+            <!-- Tab Content Container -->
+            <div class="tab-content-container">
+                <!-- Lessons Tab -->
+                <div class="tab-content active" id="lessonsTab">
+                    <div class="lesson-header">
+                        <h2>Interactive Lessons</h2>
+                        <div class="lesson-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <div class="lesson-nav-buttons">
+                                <button class="nav-button" id="prevLessonBtn" onclick="prevLesson()">
+                                    <i class="fas fa-chevron-left"></i>
+                                    <span>Previous</span>
+                                </button>
+                                <button class="nav-button" id="nextLessonBtn" onclick="nextLesson()">
+                                    <span>Next</span>
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="lesson-content" id="lessonContent">
+                        <div class="lesson-title">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span id="lessonTitle">Loading Lessons...</span>
+                        </div>
+                        <div class="lesson-body" id="lessonBody">
+                            <p>Please wait while we load the interactive lessons...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Help Tab -->
+                <div class="tab-content" id="helpTab">
+                    <div class="lesson-header">
+                        <h2>Command Reference</h2>
+                        <p>Click any command to copy it to your terminal</p>
+                    </div>
+                    
+                    <!-- File Operations -->
+                    <h3 style="margin-bottom: 15px; color: var(--text-primary);">File Operations</h3>
+                    <div class="help-grid">
+                        <div class="help-card" onclick="copyToTerminal('ls')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-list"></i>
+                                </div>
+                                <div class="help-card-title">List Files</div>
+                            </div>
+                            <div class="help-card-description">Display files and directories in current location</div>
+                            <div class="help-card-command">ls -la</div>
+                        </div>
+                        
+                        <div class="help-card" onclick="copyToTerminal('cd')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-folder"></i>
+                                </div>
+                                <div class="help-card-title">Change Directory</div>
+                            </div>
+                            <div class="help-card-description">Navigate to a different directory</div>
+                            <div class="help-card-command">cd /home/student</div>
+                        </div>
+                        
+                        <div class="help-card" onclick="copyToTerminal('mkdir')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-folder-plus"></i>
+                                </div>
+                                <div class="help-card-title">Create Directory</div>
+                            </div>
+                            <div class="help-card-description">Make a new directory/folder</div>
+                            <div class="help-card-command">mkdir my_project</div>
+                        </div>
+                        
+                        <div class="help-card" onclick="copyToTerminal('touch')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-file"></i>
+                                </div>
+                                <div class="help-card-title">Create File</div>
+                            </div>
+                            <div class="help-card-description">Create an empty file or update timestamp</div>
+                            <div class="help-card-command">touch file.txt</div>
+                        </div>
+                        
+                        <div class="help-card" onclick="copyToTerminal('cat')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="help-card-title">View File</div>
+                            </div>
+                            <div class="help-card-description">Display file contents in terminal</div>
+                            <div class="help-card-command">cat file.txt</div>
+                        </div>
+                        
+                        <div class="help-card" onclick="copyToTerminal('cp')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-copy"></i>
+                                </div>
+                                <div class="help-card-title">Copy File</div>
+                            </div>
+                            <div class="help-card-description">Duplicate files or directories</div>
+                            <div class="help-card-command">cp source.txt destination.txt</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Text Editors -->
+                    <h3 style="margin: 30px 0 15px; color: var(--text-primary);">Text Editors</h3>
+                    <div class="help-grid">
+                        <div class="help-card" onclick="copyToTerminal('nano')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+                                <div class="help-card-title">Nano Editor</div>
+                            </div>
+                            <div class="help-card-description">Simple, beginner-friendly text editor</div>
+                            <div class="help-card-command">nano filename.txt</div>
+                        </div>
+                        
+                        <div class="help-card" onclick="copyToTerminal('vim')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-keyboard"></i>
+                                </div>
+                                <div class="help-card-title">Vim Editor</div>
+                            </div>
+                            <div class="help-card-description">Powerful, advanced text editor</div>
+                            <div class="help-card-command">vim filename.txt</div>
+                        </div>
+                    </div>
+                    
+                    <!-- System Info -->
+                    <h3 style="margin: 30px 0 15px; color: var(--text-primary);">System Information</h3>
+                    <div class="help-grid">
+                        <div class="help-card" onclick="copyToTerminal('pwd')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-location-arrow"></i>
+                                </div>
+                                <div class="help-card-title">Current Directory</div>
+                            </div>
+                            <div class="help-card-description">Show your current location in filesystem</div>
+                            <div class="help-card-command">pwd</div>
+                        </div>
+                        
+                        <div class="help-card" onclick="copyToTerminal('whoami')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="help-card-title">Current User</div>
+                            </div>
+                            <div class="help-card-description">Display your username</div>
+                            <div class="help-card-command">whoami</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Commands Tab -->
+                <div class="tab-content" id="commandsTab">
+                    <div class="lesson-header">
+                        <h2>Quick Commands</h2>
+                        <p>Ready-to-use commands with one-click copy</p>
+                    </div>
+                    
+                    <div class="command-list">
+                        <div class="command-item">
+                            <div class="command-icon">
+                                <i class="fas fa-folder-open"></i>
+                            </div>
+                            <div class="command-content">
+                                <div class="command-name">Explore Current Directory</div>
+                                <div class="command-description">List all files with detailed information including hidden files</div>
+                            </div>
+                            <div class="command-action">
+                                <button class="copy-button" onclick="copyToTerminal('ls -la')">
+                                    <i class="fas fa-copy"></i>
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="command-item">
+                            <div class="command-icon">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <div class="command-content">
+                                <div class="command-name">Go to Home Directory</div>
+                                <div class="command-description">Navigate to your personal home folder</div>
+                            </div>
+                            <div class="command-action">
+                                <button class="copy-button" onclick="copyToTerminal('cd ~')">
+                                    <i class="fas fa-copy"></i>
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="command-item">
+                            <div class="command-icon">
+                                <i class="fab fa-python"></i>
+                            </div>
+                            <div class="command-content">
+                                <div class="command-name">Create Python Script</div>
+                                <div class="command-description">Make a simple Python program file</div>
+                            </div>
+                            <div class="command-action">
+                                <button class="copy-button" onclick="copyToTerminal('echo \"print(\\\"Hello World!\\\")\" > hello.py')">
+                                    <i class="fas fa-copy"></i>
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="command-item">
+                            <div class="command-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <div class="command-content">
+                                <div class="command-name">Run Python Script</div>
+                                <div class="command-description">Execute a Python program</div>
+                            </div>
+                            <div class="command-action">
+                                <button class="copy-button" onclick="copyToTerminal('python3 hello.py')">
+                                    <i class="fas fa-copy"></i>
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="command-item">
+                            <div class="command-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="command-content">
+                                <div class="command-name">Create Rust Project</div>
+                                <div class="command-description">Initialize a new Rust project with Cargo</div>
+                            </div>
+                            <div class="command-action">
+                                <button class="copy-button" onclick="copyToTerminal('cargo new my_project')">
+                                    <i class="fas fa-copy"></i>
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="command-item">
+                            <div class="command-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="command-content">
+                                <div class="command-name">Build & Run Rust</div>
+                                <div class="command-description">Compile and execute a Rust program</div>
+                            </div>
+                            <div class="command-action">
+                                <button class="copy-button" onclick="copyToTerminal('cd my_project && cargo run')">
+                                    <i class="fas fa-copy"></i>
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="command-item">
+                            <div class="command-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="command-content">
+                                <div class="command-name">Find Files</div>
+                                <div class="command-description">Search for files by name or extension</div>
+                            </div>
+                            <div class="command-action">
+                                <button class="copy-button" onclick="copyToTerminal('find . -name \"*.txt\"')">
+                                    <i class="fas fa-copy"></i>
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="command-item">
+                            <div class="command-icon">
+                                <i class="fas fa-filter"></i>
+                            </div>
+                            <div class="command-content">
+                                <div class="command-name">Search in Files</div>
+                                <div class="command-description">Find text patterns within files</div>
+                            </div>
+                            <div class="command-action">
+                                <button class="copy-button" onclick="copyToTerminal('grep \"search term\" file.txt')">
+                                    <i class="fas fa-copy"></i>
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Student Tools Tab -->
+                <div class="tab-content" id="toolsTab">
+                    <div class="lesson-header">
+                        <h2>Student Tools</h2>
+                        <p>Special commands and utilities for the classroom</p>
+                    </div>
+                    
+                    <div class="help-grid">
+                        <div class="help-card" onclick="copyToTerminal('classroom-info')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="help-card-title">Classroom Information</div>
+                            </div>
+                            <div class="help-card-description">Display your container details, IP address, and environment info</div>
+                            <div class="help-card-command">classroom-info</div>
+                        </div>
+                        
+                        <div class="help-card" onclick="copyToTerminal('myip')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-network-wired"></i>
+                                </div>
+                                <div class="help-card-title">My IP Address</div>
+                            </div>
+                            <div class="help-card-description">Quickly show your container's IP address</div>
+                            <div class="help-card-command">myip</div>
+                        </div>
+                        
+                        <div class="help-card" onclick="copyToTerminal('quick-help')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-life-ring"></i>
+                                </div>
+                                <div class="help-card-title">Quick Help</div>
+                            </div>
+                            <div class="help-card-description">Show comprehensive command reference</div>
+                            <div class="help-card-command">quick-help</div>
+                        </div>
+                        
+                        <div class="help-card" onclick="copyToTerminal('linux-tutorial')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div class="help-card-title">Beginner Tutorial</div>
+                            </div>
+                            <div class="help-card-description">Interactive step-by-step Linux tutorial</div>
+                            <div class="help-card-command">linux-tutorial</div>
+                        </div>
+                        
+                        <div class="help-card" onclick="copyToTerminal('cd /shared')">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-share-alt"></i>
+                                </div>
+                                <div class="help-card-title">Shared Folder</div>
+                            </div>
+                            <div class="help-card-description">Navigate to classroom shared directory</div>
+                            <div class="help-card-command">cd /shared</div>
+                        </div>
+                        
+                        <div class="help-card" onclick="showSSHHelp()">
+                            <div class="help-card-header">
+                                <div class="help-card-icon">
+                                    <i class="fas fa-plug"></i>
+                                </div>
+                                <div class="help-card-title">Connect to Classmate</div>
+                            </div>
+                            <div class="help-card-description">SSH to another student's container (ask for their IP first)</div>
+                            <div class="help-card-command">ssh student@[ip_address]</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Terminal Area -->
+        <div class="terminal-container">
+            <!-- Terminal Header -->
+            <div class="terminal-header">
+                <div class="terminal-info">
+                    <h3><i class="fas fa-terminal"></i> Linux Terminal</h3>
+                    <div class="terminal-status">
+                        <div class="status-indicator" id="statusIndicator"></div>
+                        <span id="connectionStatus">Connecting...</span>
+                    </div>
+                </div>
+                
+                <div class="terminal-controls">
+                    <button class="control-button" title="Clear terminal" onclick="clearTerminal()">
+                        <i class="fas fa-eraser"></i>
+                    </button>
+                    <button class="control-button" title="Increase font size" onclick="changeFontSize(1)">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button class="control-button" title="Decrease font size" onclick="changeFontSize(-1)">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <button class="control-button" title="Toggle fullscreen" onclick="toggleFullscreen()">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Terminal Screen -->
+            <div class="xterm-container">
+                <div class="xterm-screen">
+                    <div id="terminal-element"></div>
+                </div>
+            </div>
+            
+            <!-- Terminal Footer -->
+            <div class="terminal-footer">
+                <div class="shortcut-hints">
+                    <div class="shortcut-item">
+                        <span class="shortcut-key">Tab</span>
+                        <span>Auto-complete</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span class="shortcut-key">Ctrl+C</span>
+                        <span>Cancel command</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span class="shortcut-key">Ctrl+L</span>
+                        <span>Clear screen</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span class="shortcut-key">↑/↓</span>
+                        <span>Command history</span>
+                    </div>
+                </div>
+                <div>
+                    User: <strong>student</strong> | Pass: <strong>student</strong> | Type <kbd>?</kbd> for help
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ======================
+        // GLOBAL VARIABLES
+        // ======================
+        let lessons = [];
+        let currentLesson = 0;
+        let term = null;
+        let ws = null;
+        let fontSize = 14;
+        let isDarkTheme = true;
+        
+        // URL paths for lessons (set by Flask template)
+        const LESSONS_EN_URL = "{{ url_for('static', filename='lessons_en.json') }}";
+        const LESSONS_TH_URL = "{{ url_for('static', filename='lessons.json') }}";
+        
+        // ======================
+        // DOM ELEMENT REFERENCES
+        // ======================
+        const welcomeModal = document.getElementById('welcomeModal');
+        const skipWelcomeBtn = document.getElementById('skipWelcome');
+        const startLearningBtn = document.getElementById('startLearning');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarToggleIcon = document.getElementById('sidebarToggleIcon');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const appContainer = document.getElementById('appContainer');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const progressFill = document.getElementById('progressFill');
+        const lessonTitle = document.getElementById('lessonTitle');
+        const lessonBody = document.getElementById('lessonBody');
+        const prevLessonBtn = document.getElementById('prevLessonBtn');
+        const nextLessonBtn = document.getElementById('nextLessonBtn');
+        
+        // Tab management elements
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // ======================
+        // WELCOME MODAL
+        // ======================
+        function showWelcomeModal() {
+            const hasSeenWelcome = localStorage.getItem('linuxClassroomPro_welcomeSeen');
+            if (!hasSeenWelcome) {
+                welcomeModal.classList.remove('hidden');
+            } else {
+                welcomeModal.classList.add('hidden');
+            }
+        }
+        
+        function hideWelcomeModal() {
+            welcomeModal.classList.add('hidden');
+            localStorage.setItem('linuxClassroomPro_welcomeSeen', 'true');
+            // Focus terminal after welcome
+            if (term) {
+                setTimeout(() => term.focus(), 100);
+            }
+        }
+        
+        skipWelcomeBtn.addEventListener('click', hideWelcomeModal);
+        startLearningBtn.addEventListener('click', hideWelcomeModal);
+        
+        // ======================
+        // THEME MANAGEMENT
+        // ======================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('linuxClassroomPro_theme');
+            if (savedTheme === 'light') {
+                setLightTheme();
+            } else {
+                setDarkTheme();
+            }
+        }
+        
+        function setDarkTheme() {
+            document.body.classList.remove('light-theme');
+            themeIcon.className = 'fas fa-moon';
+            isDarkTheme = true;
+            localStorage.setItem('linuxClassroomPro_theme', 'dark');
+            
+            if (term) {
+                term.setOption('theme', {
+                    background: '#0f172a',
+                    foreground: '#f8fafc',
+                    cursor: '#60a5fa',
+                    black: '#0f172a',
+                    red: '#f87171',
+                    green: '#4ade80',
+                    yellow: '#fbbf24',
+                    blue: '#60a5fa',
+                    magenta: '#c084fc',
+                    cyan: '#22d3ee',
+                    white: '#cbd5e1'
+                });
+            }
+        }
+        
+        function setLightTheme() {
+            document.body.classList.add('light-theme');
+            themeIcon.className = 'fas fa-sun';
+            isDarkTheme = false;
+            localStorage.setItem('linuxClassroomPro_theme', 'light');
+            
+            if (term) {
+                term.setOption('theme', {
+                    background: '#ffffff',
+                    foreground: '#1e293b',
+                    cursor: '#3b82f6',
+                    black: '#ffffff',
+                    red: '#dc2626',
+                    green: '#16a34a',
+                    yellow: '#ca8a04',
+                    blue: '#2563eb',
+                    magenta: '#9333ea',
+                    cyan: '#0891b2',
+                    white: '#475569'
+                });
+            }
+        }
+        
+        function toggleTheme() {
+            if (isDarkTheme) {
+                setLightTheme();
+            } else {
+                setDarkTheme();
+            }
+        }
+        
+        themeToggle.addEventListener('click', toggleTheme);
+        
+        // ======================
+        // SIDEBAR MANAGEMENT
+        // ======================
+        function toggleSidebar() {
+            appContainer.classList.toggle('sidebar-hidden');
+            if (appContainer.classList.contains('sidebar-hidden')) {
+                sidebarToggleIcon.className = 'fas fa-bars';
+                sidebarToggle.style.left = '20px';
+            } else {
+                sidebarToggleIcon.className = 'fas fa-times';
+                sidebarToggle.style.left = 'calc(var(--sidebar-width) + 20px)';
+            }
+        }
+        
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        
+        // ======================
+        // TAB MANAGEMENT
+        // ======================
+        function switchTab(tabId) {
+            // Update active tab button
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('data-tab') === tabId) {
+                    button.classList.add('active');
+                }
+            });
+            
+            // Show corresponding tab content
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === `${tabId}Tab`) {
+                    content.classList.add('active');
+                }
+            });
+        }
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                switchTab(tabId);
+            });
+        });
+        
+        // ======================
+        // LESSON MANAGEMENT
+        // ======================
+        function loadLessons() {
+            // Determine which lessons file to load
+            function getLessonsFilePath() {
+                const path = window.location.pathname;
+                if (path.includes('/thai')) {
+                    return "{{ url_for('static', filename='lessons.json') }}";
+                } else {
+                    return "{{ url_for('static', filename='lessons_en.json') }}";
+                }
+            }
+            
+            // Fetch lessons
+            fetch(getLessonsFilePath())
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    lessons = data;
+                    if (lessons.length > 0) {
+                        showLesson(0);
+                    } else {
+                        lessonTitle.innerHTML = '<i class="fas fa-exclamation-triangle"></i> No Lessons Found';
+                        lessonBody.innerHTML = '<p>The lesson file is empty. Please contact your instructor.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading lessons:', error);
+                    lessonTitle.innerHTML = '<i class="fas fa-exclamation-circle"></i> Error Loading Lessons';
+                    lessonBody.innerHTML = '<p>Could not load lessons. Please check your internet connection or try refreshing the page.</p>';
+                });
+        }
+        
+        function showLesson(index) {
+            if (!lessons || lessons.length === 0) return;
+            
+            const lesson = lessons[index];
+            currentLesson = index;
+            
+            // Update lesson display
+            lessonTitle.innerHTML = `<i class="fas fa-book-open"></i> ${lesson.title}`;
+            lessonBody.innerHTML = lesson.content;
+            
+            // Update progress bar
+            const progress = ((index + 1) / lessons.length) * 100;
+            progressFill.style.width = `${progress}%`;
+            
+            // Update button states
+            prevLessonBtn.disabled = (index === 0);
+            nextLessonBtn.disabled = (index === lessons.length - 1);
+            
+            // Switch to lessons tab
+            switchTab('lessons');
+            
+            // Auto-focus terminal for immediate practice
+            setTimeout(() => {
+                if (term) term.focus();
+            }, 300);
+        }
+        
+        function nextLesson() {
+            if (currentLesson < lessons.length - 1) {
+                showLesson(currentLesson + 1);
+            }
+        }
+        
+        function prevLesson() {
+            if (currentLesson > 0) {
+                showLesson(currentLesson - 1);
+            }
+        }
+        
+        // ======================
+        // TERMINAL MANAGEMENT
+        // ======================
+        function initializeTerminal() {
+            // Initialize Xterm.js
+            term = new Terminal({
+                cursorBlink: true,
+                fontSize: fontSize,
+                fontFamily: "'Fira Code', 'Courier New', monospace",
+                theme: isDarkTheme ? {
+                    background: '#0f172a',
+                    foreground: '#f8fafc',
+                    cursor: '#60a5fa',
+                    black: '#0f172a',
+                    red: '#f87171',
+                    green: '#4ade80',
+                    yellow: '#fbbf24',
+                    blue: '#60a5fa',
+                    magenta: '#c084fc',
+                    cyan: '#22d3ee',
+                    white: '#cbd5e1'
+                } : {
+                    background: '#ffffff',
+                    foreground: '#1e293b',
+                    cursor: '#3b82f6',
+                    black: '#ffffff',
+                    red: '#dc2626',
+                    green: '#16a34a',
+                    yellow: '#ca8a04',
+                    blue: '#2563eb',
+                    magenta: '#9333ea',
+                    cyan: '#0891b2',
+                    white: '#475569'
+                },
+                scrollback: 10000,
+                allowTransparency: false,
+                convertEol: true,
+                disableStdin: false
+            });
+            
+            // Load fit addon
+            const fitAddon = new FitAddon.FitAddon();
+            term.loadAddon(fitAddon);
+            
+            // Open terminal in container
+            term.open(document.getElementById('terminal-element'));
+            fitAddon.fit();
+            term.focus();
+            
+            // Connect WebSocket
+            connectWebSocket();
+            
+            // Handle terminal resize
+            window.addEventListener('resize', () => {
+                fitAddon.fit();
+            });
+            
+            // Handle terminal input
+            term.onData((data) => {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(data);
+                }
+            });
+            
+            // Handle paste event
+            term.onKey(({ key, domEvent }) => {
+                if (domEvent.ctrlKey && domEvent.key === 'v') {
+                    // Allow paste
+                    return;
+                }
+            });
+        }
+        
+        function connectWebSocket() {
+            const protocol = (location.protocol === 'https:') ? 'wss://' : 'ws://';
+            const url = protocol + location.host + '/terminal';
+            ws = new WebSocket(url);
+            
+            // WebSocket event handlers
+            ws.onopen = () => {
+                connectionStatus.textContent = "Connected";
+                statusIndicator.style.background = "#10b981";
+                term.write('\r\n\x1b[1;32m● Connected to Linux Classroom Pro\x1b[0m\r\n');
+                term.write('\x1b[1;36mType "quick-help" for assistance or explore the sidebar lessons.\x1b[0m\r\n\r\n');
+            };
+            
+            ws.onmessage = (event) => {
+                term.write(event.data);
+            };
+            
+            ws.onclose = () => {
+                connectionStatus.textContent = "Disconnected";
+                statusIndicator.style.background = "#ef4444";
+                statusIndicator.classList.add('disconnected');
+                term.write('\r\n\r\n\x1b[1;31m● Connection lost. Please refresh the page.\x1b[0m\r\n');
+                term.setOption('disableStdin', true);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                connectionStatus.textContent = "Connection Error";
+                statusIndicator.style.background = "#f59e0b";
+                statusIndicator.classList.add('disconnected');
+            };
+        }
+        
+        // ======================
+        // UTILITY FUNCTIONS
+        // ======================
+        function copyToTerminal(command) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                // Send command followed by Enter
+                ws.send(command + '\r');
+                
+                // Visual feedback
+                const originalCursorY = term._core.buffer.y;
+                term.write(`\r\n\x1b[1;36m[Command copied: ${command}]\x1b[0m\r\n`);
+                
+                // Focus terminal
+                term.focus();
+                
+                // Show in terminal
+                term.write(`\x1b[1;37m$\x1b[0m ${command}\r\n`);
+            } else {
+                alert('Terminal is not connected. Please wait for connection...');
+            }
+        }
+        
+        function clearTerminal() {
+            term.clear();
+            term.write('\r\n');
+            term.focus();
+        }
+        
+        function changeFontSize(delta) {
+            fontSize = Math.max(10, Math.min(24, fontSize + delta));
+            term.setOption('fontSize', fontSize);
+            term.focus();
+        }
+        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+        
+        function showSSHHelp() {
+            alert("To connect to a classmate's container:\n\n1. Ask them for their container IP (they can run 'myip')\n2. Use: ssh student@[their_ip_address]\n3. Password: student\n\nYou can find your own IP with the 'myip' command.");
+        }
+        
+        // ======================
+        // KEYBOARD SHORTCUTS
+        // ======================
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+L to clear terminal
+            if (e.ctrlKey && e.key === 'l') {
+                e.preventDefault();
+                clearTerminal();
+            }
+            
+            // Ctrl+Plus to increase font size
+            if (e.ctrlKey && (e.key === '+' || e.key === '=')) {
+                e.preventDefault();
+                changeFontSize(1);
+            }
+            
+            // Ctrl+Minus to decrease font size
+            if (e.ctrlKey && e.key === '-') {
+                e.preventDefault();
+                changeFontSize(-1);
+            }
+            
+            // Ctrl+Space to toggle sidebar
+            if (e.ctrlKey && e.key === ' ') {
+                e.preventDefault();
+                toggleSidebar();
+            }
+            
+            // ? key for help
+            if (e.key === '?') {
+                e.preventDefault();
+                alert("Keyboard Shortcuts:\n\n" +
+                      "Ctrl+L - Clear terminal\n" +
+                      "Ctrl++/- - Change font size\n" +
+                      "Ctrl+Space - Toggle sidebar\n" +
+                      "Tab - Auto-complete (in terminal)\n" +
+                      "↑/↓ - Command history (in terminal)\n" +
+                      "? - Show this help\n\n" +
+                      "Click commands in sidebar to copy them to terminal.");
+            }
+        });
+        
+        // ======================
+        // INITIALIZATION
+        // ======================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize theme
+            initTheme();
+            
+            // Show welcome modal
+            showWelcomeModal();
+            
+            // Load lessons
+            loadLessons();
+            
+            // Initialize terminal
+            setTimeout(() => {
+                initializeTerminal();
+            }, 100);
+            
+            // Auto-hide welcome modal after 10 seconds if not interacted with
+            setTimeout(() => {
+                if (!localStorage.getItem('linuxClassroomPro_welcomeSeen')) {
+                    hideWelcomeModal();
+                }
+            }, 10000);
+        });
+    </script>
+</body>
+</html>

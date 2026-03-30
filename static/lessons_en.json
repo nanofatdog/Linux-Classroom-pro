@@ -1,0 +1,82 @@
+[
+    {
+        "title": "Lesson 1: Getting Started with Linux",
+        "content": "<h3>Welcome to Linux Classroom!</h3><p>You're now in a fully functional Linux environment. Let's start with the basics.</p><p><strong>Try these commands:</strong></p><p><code>pwd</code> - Show your current directory (Print Working Directory)</p><p><code>ls</code> - List files in the current directory</p><p><code>whoami</code> - Show your username</p><p><code>date</code> - Display current date and time</p>"
+    },
+    {
+        "title": "Lesson 2: Exploring Files and Directories",
+        "content": "<h3>Navigating the File System</h3><p>Linux organizes files in a tree-like structure. Let's learn to navigate:</p><p><code>ls -la</code> - List all files with details (including hidden files)</p><p><code>cd ~</code> - Go to your home directory</p><p><code>cd /</code> - Go to the root directory (top level)</p><p><code>cd ..</code> - Go up one directory level</p><p><code>cd -</code> - Go back to previous directory</p>"
+    },
+    {
+        "title": "Lesson 3: Creating Files and Directories",
+        "content": "<h3>Managing Your Workspace</h3><p>Let's create some files and directories:</p><p><code>mkdir my_project</code> - Create a new directory called 'my_project'</p><p><code>cd my_project</code> - Enter the new directory</p><p><code>touch hello.txt</code> - Create an empty file</p><p><code>echo \"Hello Linux!\" > hello.txt</code> - Write text to the file</p><p><code>cat hello.txt</code> - Display file contents</p>"
+    },
+    {
+        "title": "Lesson 4: Editing Files",
+        "content": "<h3>Working with Text Editors</h3><p>Linux has several text editors. Let's try the simplest ones:</p><p><strong>Nano (easy):</strong></p><p><code>nano myfile.txt</code> - Open nano editor</p><p>In nano: Ctrl+O to save, Ctrl+X to exit</p><p><strong>Vim (advanced):</strong></p><p><code>vim myfile.txt</code> - Open vim editor</p><p>In vim: Press 'i' to insert, Esc then ':wq' to save and quit</p><p><strong>Quick editing:</strong></p><p><code>echo \"Line 1\" > file.txt</code> - Create/overwrite file</p><p><code>echo \"Line 2\" >> file.txt</code> - Append to file</p>"
+    },
+    {
+        "title": "Lesson 5: File Operations",
+        "content": "<h3>Copying, Moving, and Deleting</h3><p>Learn to manage your files:</p><p><code>cp file.txt copy.txt</code> - Copy a file</p><p><code>mv file.txt newname.txt</code> - Rename or move a file</p><p><code>rm file.txt</code> - Delete a file (careful!)</p><p><code>rm -r directory/</code> - Delete a directory and its contents</p><p><code>ls -lh</code> - List files with human-readable sizes</p>"
+    },
+    {
+        "title": "Lesson 6: Getting Help",
+        "content": "<h3>Linux Help System</h3><p>Linux has built-in help for commands:</p><p><code>man ls</code> - Show manual page for 'ls' command</p><p><code>ls --help</code> - Quick help for any command</p><p><code>whatis ls</code> - Brief description of a command</p><p><strong>Classroom Help Commands:</strong></p><p><code>quick-help</code> - Show classroom quick reference</p><p><code>classroom-info</code> - Show your container information</p><p><code>linux-tutorial</code> - Interactive beginner tutorial</p>"
+    },
+    {
+        "title": "Lesson 7: Introduction to Python",
+        "content": "<h3>Your First Python Program</h3><p>Python is already installed in your container. Let's try it:</p><p><code>python3 --version</code> - Check Python version</p><p><code>python3</code> - Start Python interactive mode</p><p>In Python interactive mode:</p><p><code>>>> print(\"Hello from Python!\")</code></p><p><code>>> exit()</code> - Exit Python</p><p><strong>Create a Python script:</strong></p><p><code>echo 'print(\"Hello World!\")' > hello.py</code></p><p><code>python3 hello.py</code> - Run the script</p>"
+    },
+    {
+        "title": "Lesson 8: Python Basics",
+        "content": "<h3>Variables and Operations</h3><p>Let's learn Python basics:</p><p><code>echo '# Variables in Python' > vars.py</code></p><p><code>echo 'name = \"Student\"' >> vars.py</code></p><p><code>echo 'age = 20' >> vars.py</code></p><p><code>echo 'print(f\"Hello {name}, you are {age} years old\")' >> vars.py</code></p><p><code>python3 vars.py</code> - Run the script</p><p><strong>Python lists:</strong></p><p><code>echo 'fruits = [\"apple\", \"banana\", \"cherry\"]' >> list_demo.py</code></p><p><code>echo 'for fruit in fruits:' >> list_demo.py</code></p><p><code>echo '    print(fruit)' >> list_demo.py</code></p>"
+    },
+    {
+        "title": "Lesson 9: Introduction to Rust",
+        "content": "<h3>Your First Rust Program</h3><p>Rust is a systems programming language. It's already installed:</p><p><code>rustc --version</code> - Check Rust compiler version</p><p><code>cargo --version</code> - Check Cargo (Rust package manager)</p><p><strong>Create a Rust project:</strong></p><p><code>cargo new hello_rust</code> - Create new project</p><p><code>cd hello_rust</code> - Enter project directory</p><p><code>cargo run</code> - Build and run the project</p><p>This will compile and run the \"Hello, world!\" program.</p>"
+    },
+    {
+        "title": "Lesson 10: Rust Basics",
+        "content": "<h3>Understanding Rust Code</h3><p>Let's look at the generated Rust code:</p><p><code>cat hello_rust/src/main.rs</code> - View the Rust source code</p><p>You'll see:</p><pre>fn main() {\n    println!(\"Hello, world!\");\n}</pre><p><strong>Modify the program:</strong></p><p><code>echo 'fn main() { println!(\"Hello from Rust in Linux Classroom!\"); }' > hello_rust/src/main.rs</code></p><p><code>cd hello_rust && cargo run</code> - Run the modified program</p>"
+    },
+    {
+        "title": "Lesson 11: Working with Permissions",
+        "content": "<h3>Understanding Linux Permissions</h3><p>Linux has a permission system for security:</p><p><code>ls -la</code> - Notice the first column shows permissions</p><p>Example: <code>-rw-r--r--</code></p><p>- First character: file type (- for file, d for directory)</p><p>- Next 3: owner permissions (read, write, execute)</p><p>- Next 3: group permissions</p><p>- Last 3: others permissions</p><p><code>chmod +x script.sh</code> - Make a file executable</p><p><code>chmod 644 file.txt</code> - Set specific permissions</p>"
+    },
+    {
+        "title": "Lesson 12: Finding Files and Text",
+        "content": "<h3>Search Tools</h3><p>Learn to find what you need:</p><p><code>find . -name \"*.txt\"</code> - Find all .txt files in current directory</p><p><code>find /home -type f -name \"*.py\"</code> - Find Python files in /home</p><p><code>grep \"hello\" file.txt</code> - Search for \"hello\" in file.txt</p><p><code>grep -r \"function\" .</code> - Recursively search for \"function\" in all files</p><p><code>locate filename</code> - Find files by name (if database is updated)</p>"
+    },
+    {
+        "title": "Lesson 13: Process Management",
+        "content": "<h3>Managing Running Programs</h3><p>Learn about processes:</p><p><code>ps</code> - Show your processes</p><p><code>ps aux</code> - Show all processes</p><p><code>htop</code> - Interactive process viewer (press q to quit)</p><p><code>kill [PID]</code> - Terminate a process by ID</p><p><code>sleep 60 &</code> - Run a command in background</p><p><code>jobs</code> - List background jobs</p><p><code>fg</code> - Bring background job to foreground</p>"
+    },
+    {
+        "title": "Lesson 14: Environment Variables",
+        "content": "<h3>System Configuration</h3><p>Environment variables store system settings:</p><p><code>echo $HOME</code> - Show home directory path</p><p><code>echo $PATH</code> - Show command search path</p><p><code>env</code> - Show all environment variables</p><p><strong>Set your own variable:</strong></p><p><code>export MY_NAME=\"Student\"</code> - Create a variable</p><p><code>echo $MY_NAME</code> - Use the variable</p><p><strong>Make it permanent (for session):</strong></p><p><code>echo 'export MY_COURSE=\"Linux101\"' >> ~/.bashrc</code></p>"
+    },
+    {
+        "title": "Lesson 15: Package Management",
+        "content": "<h3>Installing Software</h3><p>Ubuntu uses apt for package management:</p><p><code>sudo apt update</code> - Update package lists (sudo may not work for student)</p><p><code>apt list --installed</code> - List installed packages</p><p><strong>Python packages with pip:</strong></p><p><code>pip install cowsay</code> - Install a fun Python package</p><p><code>python3 -c \"import cowsay; cowsay.cow('Hello!')\"</code> - Use it</p><p><strong>Rust packages with cargo:</strong></p><p>Add dependencies to Cargo.toml, then <code>cargo build</code></p>"
+    },
+    {
+        "title": "Lesson 16: Networking Basics",
+        "content": "<h3>Network Commands</h3><p>Basic network troubleshooting:</p><p><code>ping -c 4 google.com</code> - Test connectivity (Ctrl+C to stop)</p><p><code>ifconfig</code> or <code>ip addr</code> - Show network interfaces</p><p><code>curl https://example.com</code> - Fetch web page content</p><p><code>wget https://example.com/file.txt</code> - Download a file</p><p><strong>Classroom networking:</strong></p><p><code>myip</code> - Show your container IP address</p><p><code>ssh student@[classmate_ip]</code> - Connect to classmate's container</p>"
+    },
+    {
+        "title": "Lesson 17: Shell Scripting Basics",
+        "content": "<h3>Automate Tasks with Scripts</h3><p>Create your first shell script:</p><p><code>echo '#!/bin/bash' > myscript.sh</code></p><p><code>echo 'echo \"Hello from shell script!\"' >> myscript.sh</code></p><p><code>echo 'echo \"Today is $(date)\"' >> myscript.sh</code></p><p><code>chmod +x myscript.sh</code> - Make it executable</p><p><code>./myscript.sh</code> - Run the script</p><p><strong>Script with arguments:</strong></p><p><code>echo '#!/bin/bash' > greet.sh</code></p><p><code>echo 'echo \"Hello $1!\"' >> greet.sh</code></p><p><code>chmod +x greet.sh</code></p><p><code>./greet.sh Student</code> - Pass an argument</p>"
+    },
+    {
+        "title": "Lesson 18: Version Control with Git",
+        "content": "<h3>Introduction to Git</h3><p>Git is installed in your container:</p><p><code>git --version</code> - Check Git version</p><p><strong>Basic Git workflow:</strong></p><p><code>mkdir mygitproject && cd mygitproject</code></p><p><code>git init</code> - Initialize repository</p><p><code>echo \"# My Project\" > README.md</code></p><p><code>git add README.md</code> - Stage file</p><p><code>git commit -m \"Initial commit\"</code> - Commit changes</p><p><code>git status</code> - Check repository status</p>"
+    },
+    {
+        "title": "Lesson 19: Text Processing Tools",
+        "content": "<h3>Powerful Text Manipulation</h3><p>Linux has powerful text processing tools:</p><p><code>cat file.txt | wc -l</code> - Count lines in file</p><p><code>cat file.txt | head -5</code> - Show first 5 lines</p><p><code>cat file.txt | tail -5</code> - Show last 5 lines</p><p><code>sort file.txt</code> - Sort lines alphabetically</p><p><code>uniq file.txt</code> - Remove duplicate lines</p><p><code>cut -d',' -f1 data.csv</code> - Extract first column from CSV</p><p><code>tr 'a-z' 'A-Z' < file.txt</code> - Convert to uppercase</p>"
+    },
+    {
+        "title": "Lesson 20: Congratulations!",
+        "content": "<h3>You've Completed the Basics!</h3><p>Great job completing these lessons! You now have a solid foundation in Linux, Python, and Rust.</p><p><strong>What's next?</strong></p><p>1. Practice regularly - use the terminal daily</p><p>2. Build small projects - create scripts, programs</p><p>3. Explore man pages - <code>man</code> is your friend</p><p>4. Join Linux communities - ask questions, learn from others</p><p><strong>Remember these classroom commands:</strong></p><p><code>quick-help</code> - Quick reference</p><p><code>linux-tutorial</code> - Interactive tutorial</p><p><code>classroom-info</code> - Container information</p><p>Happy learning and coding!</p>"
+    }
+]

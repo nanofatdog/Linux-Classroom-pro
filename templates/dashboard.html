@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Linux Classroom</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .session-card {
+            border-left: 4px solid #007bff;
+        }
+        .session-active {
+            border-left-color: #28a745;
+        }
+        .session-inactive {
+            border-left-color: #6c757d;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 15px;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .last-update {
+            font-size: 0.8rem;
+            color: #6c757d;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col">
+                <h1><i class="bi bi-speedometer2"></i> Linux Classroom Teacher Dashboard</h1>
+                <p class="lead">Monitor student sessions and system resources in real-time</p>
+            </div>
+            <div class="col-auto">
+                <div class="last-update" id="lastUpdate">Last updated: <span id="updateTime">--:--:--</span></div>
+                <button class="btn btn-primary" onclick="refreshData()">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+                <button class="btn btn-outline-secondary" onclick="autoRefreshToggle()">
+                    <i class="bi bi-play-circle" id="autoRefreshIcon"></i>
+                    <span id="autoRefreshText">Auto-refresh: Off</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- System Stats -->
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="stat-value text-primary" id="activeSessions">0</div>
+                        <div class="stat-label">Active Sessions</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="stat-value text-success" id="totalSessions">0</div>
+                        <div class="stat-label">Total Sessions Today</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="stat-value text-warning" id="cpuUsage">0%</div>
+                        <div class="stat-label">CPU Usage</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="stat-value text-info" id="memoryUsage">0%</div>
+                        <div class="stat-label">Memory Usage</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Active Sessions Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-people"></i> Active Student Sessions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Session ID</th>
+                                        <th>Container ID</th>
+                                        <th>Container IP</th>
+                                        <th>Client IP</th>
+                                        <th>Duration</th>
+                                        <th>Activity</th>
+                                        <th>Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sessionsTable">
+                                    <tr id="noSessions">
+                                        <td colspan="7" class="text-center text-muted">No active sessions</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <!-- System Information -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-hdd-stack"></i> System Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Docker Version
+                                <span class="badge bg-secondary" id="dockerVersion">-</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Running Containers
+                                <span class="badge bg-primary" id="runningContainers">0</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Stopped Containers
+                                <span class="badge bg-secondary" id="stoppedContainers">0</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Total Images
+                                <span class="badge bg-info" id="totalImages">0</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Memory Total
+                                <span class="badge bg-dark" id="memoryTotal">0 GB</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Memory Available
+                                <span class="badge bg-success" id="memoryAvailable">0 GB</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary" onclick="location.href='/'">
+                                <i class="bi bi-terminal"></i> Go to Classroom
+                            </button>
+                            <button class="btn btn-outline-info" onclick="refreshData()">
+                                <i class="bi bi-arrow-clockwise"></i> Refresh Data
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="showSystemAlert()">
+                                <i class="bi bi-bell"></i> System Alert
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-4 text-center text-muted">
+            <p>Linux Classroom v2.0 | Teacher Dashboard | Data updates every 10 seconds when auto-refresh is enabled</p>
+        </footer>
+    </div>
+
+    <script>
+        let autoRefreshInterval = null;
+        let autoRefreshEnabled = false;
+
+        function formatDuration(seconds) {
+            if (seconds < 60) return `${seconds}s`;
+            if (seconds < 3600) return `${Math.floor(seconds/60)}m ${seconds%60}s`;
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}h ${minutes}m`;
+        }
+
+        function formatTimeAgo(timestamp) {
+            const now = new Date();
+            const past = new Date(timestamp);
+            const diffSeconds = Math.floor((now - past) / 1000);
+            
+            if (diffSeconds < 60) return `${diffSeconds}s ago`;
+            if (diffSeconds < 3600) return `${Math.floor(diffSeconds/60)}m ago`;
+            return `${Math.floor(diffSeconds/3600)}h ago`;
+        }
+
+        function formatBytes(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+            return (bytes/(1024*1024)).toFixed(1) + ' MB';
+        }
+
+        async function fetchStatus() {
+            try {
+                const response = await fetch('/status');
+                if (!response.ok) throw new Error('Failed to fetch status');
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching status:', error);
+                return null;
+            }
+        }
+
+        function updateDashboard(data) {
+            if (!data) return;
+            
+            // Update stats
+            document.getElementById('activeSessions').textContent = data.active_sessions;
+            document.getElementById('totalSessions').textContent = data.total_sessions;
+            document.getElementById('cpuUsage').textContent = data.system.cpu_percent.toFixed(1) + '%';
+            document.getElementById('memoryUsage').textContent = data.system.memory_percent.toFixed(1) + '%';
+            
+            // Update system info
+            document.getElementById('dockerVersion').textContent = data.docker.version;
+            document.getElementById('runningContainers').textContent = data.docker.containers_running;
+            document.getElementById('stoppedContainers').textContent = data.docker.containers_stopped;
+            document.getElementById('totalImages').textContent = data.docker.images;
+            document.getElementById('memoryTotal').textContent = data.system.memory_total_gb + ' GB';
+            document.getElementById('memoryAvailable').textContent = data.system.memory_available_gb + ' GB';
+            
+            // Update sessions table
+            const sessionsTable = document.getElementById('sessionsTable');
+            const noSessionsRow = document.getElementById('noSessions');
+            
+            if (data.sessions.length === 0) {
+                noSessionsRow.style.display = '';
+                // Clear any existing rows (except the noSessions row)
+                while (sessionsTable.children.length > 1) {
+                    sessionsTable.removeChild(sessionsTable.lastChild);
+                }
+            } else {
+                noSessionsRow.style.display = 'none';
+                
+                // Clear existing rows (except the noSessions row)
+                while (sessionsTable.children.length > 1) {
+                    sessionsTable.removeChild(sessionsTable.lastChild);
+                }
+                
+                // Add new rows
+                data.sessions.forEach(session => {
+                    const row = document.createElement('tr');
+                    row.className = 'session-active';
+                    row.innerHTML = `
+                        <td><span class="badge bg-primary">${session.session_id}</span></td>
+                        <td><code>${session.container_id}</code></td>
+                        <td><code>${session.container_ip}</code></td>
+                        <td><small>${session.client_ip}</small></td>
+                        <td>${formatDuration(session.duration_seconds)}</td>
+                        <td>${formatTimeAgo(session.last_activity)}</td>
+                        <td>↑${formatBytes(session.bytes_sent)} ↓${formatBytes(session.bytes_received)}</td>
+                    `;
+                    sessionsTable.appendChild(row);
+                });
+            }
+            
+            // Update timestamp
+            const now = new Date();
+            document.getElementById('updateTime').textContent = 
+                now.toLocaleTimeString('en-US', { hour12: false });
+        }
+
+        async function refreshData() {
+            const data = await fetchStatus();
+            updateDashboard(data);
+        }
+
+        function autoRefreshToggle() {
+            const icon = document.getElementById('autoRefreshIcon');
+            const text = document.getElementById('autoRefreshText');
+            
+            if (autoRefreshEnabled) {
+                clearInterval(autoRefreshInterval);
+                icon.className = 'bi bi-play-circle';
+                text.textContent = 'Auto-refresh: Off';
+                autoRefreshEnabled = false;
+            } else {
+                autoRefreshInterval = setInterval(refreshData, 10000); // 10 seconds
+                icon.className = 'bi bi-pause-circle';
+                text.textContent = 'Auto-refresh: On (10s)';
+                autoRefreshEnabled = true;
+                refreshData(); // Immediate refresh
+            }
+        }
+
+        function showSystemAlert() {
+            const message = prompt('Enter system alert message to broadcast to all students:');
+            if (message) {
+                alert(`Alert would be sent: "${message}"\n\nNote: This feature requires additional implementation.`);
+                // In a real implementation, you would send this to a broadcast endpoint
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshData();
+            // Auto-refresh every 30 seconds by default
+            autoRefreshInterval = setInterval(refreshData, 30000);
+            autoRefreshEnabled = true;
+            document.getElementById('autoRefreshIcon').className = 'bi bi-pause-circle';
+            document.getElementById('autoRefreshText').textContent = 'Auto-refresh: On (30s)';
+        });
+    </script>
+</body>
+</html>

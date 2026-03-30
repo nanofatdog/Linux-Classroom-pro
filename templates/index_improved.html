@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux Classroom - Interactive Learning Environment</title>
+    <!-- Load Xterm.js library and addons for terminal functionality -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --success-color: #2ec4b6;
+            --warning-color: #ff9f1c;
+            --danger-color: #e71d36;
+            --light-bg: #f8f9fa;
+            --dark-bg: #1a1a2e;
+            --sidebar-bg: #ffffff;
+            --terminal-bg: #0d1117;
+            --text-light: #f8f9fa;
+            --text-dark: #212529;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            margin: 0;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* SIDEBAR STYLES */
+        .sidebar {
+            width: 500px;
+            background-color: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .sidebar-tabs {
+            display: flex;
+            background-color: #f1f3f5;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #495057;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-button.active {
+            background-color: white;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .tab-button:hover:not(.active) {
+            background-color: #e9ecef;
+        }
+
+        .tab-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* LESSONS TAB */
+        .lesson-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .lesson-counter {
+            font-size: 0.9rem;
+            color: #6c757d;
+            background-color: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .nav-btn:disabled {
+            background-color: #adb5bd;
+            cursor: not-allowed;
+        }
+
+        .lesson-content {
+            line-height: 1.6;
+        }
+
+        .lesson-content h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .lesson-content p {
+            margin-bottom: 15px;
+        }
+
+        .lesson-content code {
+            background-color: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+
+        .lesson-content pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* HELP TAB */
+        .help-category {
+            margin-bottom: 25px;
+        }
+
+        .help-category h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .help-card {
+            background-color: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .help-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .help-card h5 {
+            color: var(--secondary-color);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-card p {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .help-card code {
+            background-color: #f8f9fa;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+
+        /* QUICK COMMANDS TAB */
+        .command-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .command-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background-color: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .command-item:hover {
+            background-color: #f8f9fa;
+            border-color: var(--primary-color);
+        }
+
+        .command-info {
+            flex: 1;
+        }
+
+        .command-name {
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 3px;
+        }
+
+        .command-desc {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .command-copy {
+            background: none;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: #495057;
+            transition: all 0.2s;
+        }
+
+        .command-copy:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* TERMINAL AREA */
+        .terminal-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--terminal-bg);
+            position: relative;
+        }
+
+        .terminal-header {
+            padding: 15px 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .terminal-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .control-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        #terminal-container {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .xterm {
+            height: 100% !important;
+        }
+
+        .terminal-footer {
+            padding: 10px 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+            color: #adb5bd;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .shortcut-hint {
+            display: flex;
+            gap: 15px;
+        }
+
+        .shortcut-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* WELCOME MODAL */
+        .welcome-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+
+        .welcome-modal.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 25px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-modal {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.2s;
+        }
+
+        .close-modal:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .welcome-step {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .welcome-step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .step-icon {
+            background-color: var(--accent-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+
+        .step-content p {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            background-color: #f8f9fa;
+            border-radius: 0 0 10px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .skip-btn {
+            background: none;
+            border: 1px solid #dee2e6;
+            color: #6c757d;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .skip-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        .start-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .start-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* SIDEBAR TOGGLE */
+        .sidebar-toggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-toggle:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.1);
+        }
+
+        .sidebar-hidden .sidebar {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-hidden .terminal-area {
+            margin-left: 0;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: absolute;
+                height: 100%;
+            }
+            
+            .help-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .shortcut-hint {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Modal -->
+    <div class="welcome-modal" id="welcomeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-graduation-cap"></i> Welcome to Linux Classroom!</h2>
+                <button class="close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="welcome-step">
+                    <div class="step-icon">
+                        <i class="fas fa-terminal"></i>
+                    </div>
+                    <div class="step-content">
+                        <h4>Interactive Terminal</h4>
+                        <p>You have a full Linux terminal in your browser! Type commands just like on a real Linux system. Try basic commands like <code>ls</code>, <code>pwd</code>, or <code>whoami</code> to get started.</p>
+                    </div>
+                </div>
+                <div class="welcome-step">
+                    <div class="step-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="step-content">
+                        <h4>Step-by-Step Lessons</h4>
+                        <p>Follow the lessons on the left panel to learn Linux, Python, and Rust. Start with Lesson 1 and progress at your own pace. Each lesson includes examples you can try in the terminal.</p>
+                    </div>
+                </div>
+                <div class="welcome-step">
+                    <div class="step-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="step-content">
+                        <h4>Quick Help & Commands</h4>
+                        <p>Use the "Help" and "Quick Commands" tabs for reference. You can copy commands with one click! Check out the "Student Tools" tab for special classroom commands.</p>
+                    </div>
+                </div>
+                <div class="welcome-step">
+                    <div class="step-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="step-content">
+                        <h4>Safe Learning Environment</h4>
+                        <p>Your container is isolated and safe. Experiment freely without worrying about breaking anything. Your work is saved during your session but will be reset when you leave.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="skip-btn" id="skipWelcome">
+                    Skip Tutorial
+                </button>
+                <button class="start-btn" id="startLearning">
+                    Start Learning!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer">
+        <!-- Sidebar Toggle Button -->
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><i class="fas fa-graduation-cap"></i> Linux Classroom</h1>
+                <p>Interactive Learning Environment</p>
+            </div>
+            
+            <div class="sidebar-tabs">
+                <button class="tab-button active" data-tab="lessons">
+                    <i class="fas fa-book"></i> Lessons
+                </button>
+                <button class="tab-button" data-tab="help">
+                    <i class="fas fa-question-circle"></i> Help
+                </button>
+                <button class="tab-button" data-tab="commands">
+                    <i class="fas fa-terminal"></i> Quick Commands
+                </button>
+                <button class="tab-button" data-tab="tools">
+                    <i class="fas fa-tools"></i> Student Tools
+                </button>
+            </div>
+            
+            <!-- Lessons Tab -->
+            <div class="tab-content active" id="lessonsTab">
+                <div class="lesson-nav">
+                    <div class="lesson-counter">
+                        Lesson <span id="currentLessonNum">1</span> of <span id="totalLessons">50</span>
+                    </div>
+                    <div class="nav-buttons">
+                        <button class="nav-btn" id="prevLessonBtn" onclick="prevLesson()">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <button class="nav-btn" id="nextLessonBtn" onclick="nextLesson()">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="lesson-content" id="lessonContent">
+                    <h3 id="lessonTitle">Loading Lessons...</h3>
+                    <div id="lessonText">
+                        <p>Please wait while lessons are loading...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Help Tab -->
+            <div class="tab-content" id="helpTab">
+                <div class="help-category">
+                    <h4><i class="fas fa-folder-open"></i> File & Directory Operations</h4>
+                    <div class="help-grid">
+                        <div class="help-card" onclick="copyToTerminal('ls')">
+                            <h5><i class="fas fa-list"></i> ls</h5>
+                            <p>List files and directories</p>
+                            <code>ls -la</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('cd')">
+                            <h5><i class="fas fa-folder"></i> cd</h5>
+                            <p>Change directory</p>
+                            <code>cd /home/student</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('pwd')">
+                            <h5><i class="fas fa-location-arrow"></i> pwd</h5>
+                            <p>Print working directory</p>
+                            <code>pwd</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('mkdir')">
+                            <h5><i class="fas fa-folder-plus"></i> mkdir</h5>
+                            <p>Create directory</p>
+                            <code>mkdir my_folder</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('touch')">
+                            <h5><i class="fas fa-file"></i> touch</h5>
+                            <p>Create empty file</p>
+                            <code>touch file.txt</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('cp')">
+                            <h5><i class="fas fa-copy"></i> cp</h5>
+                            <p>Copy file or directory</p>
+                            <code>cp file.txt backup.txt</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('mv')">
+                            <h5><i class="fas fa-arrows-alt"></i> mv</h5>
+                            <p>Move or rename file</p>
+                            <code>mv old.txt new.txt</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('rm')">
+                            <h5><i class="fas fa-trash-alt"></i> rm</h5>
+                            <p>Remove file</p>
+                            <code>rm file.txt</code>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-category">
+                    <h4><i class="fas fa-eye"></i> View & Edit Files</h4>
+                    <div class="help-grid">
+                        <div class="help-card" onclick="copyToTerminal('cat')">
+                            <h5><i class="fas fa-file-alt"></i> cat</h5>
+                            <p>Display file content</p>
+                            <code>cat file.txt</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('nano')">
+                            <h5><i class="fas fa-edit"></i> nano</h5>
+                            <p>Simple text editor</p>
+                            <code>nano file.txt</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('vim')">
+                            <h5><i class="fas fa-keyboard"></i> vim</h5>
+                            <p>Advanced text editor</p>
+                            <code>vim file.txt</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('less')">
+                            <h5><i class="fas fa-file-code"></i> less</h5>
+                            <p>View file page by page</p>
+                            <code>less long_file.txt</code>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-category">
+                    <h4><i class="fas fa-search"></i> Search & Filter</h4>
+                    <div class="help-grid">
+                        <div class="help-card" onclick="copyToTerminal('grep')">
+                            <h5><i class="fas fa-search"></i> grep</h5>
+                            <p>Search text in files</p>
+                            <code>grep "hello" file.txt</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('find')">
+                            <h5><i class="fas fa-search-location"></i> find</h5>
+                            <p>Find files and directories</p>
+                            <code>find . -name "*.txt"</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Commands Tab -->
+            <div class="tab-content" id="commandsTab">
+                <div class="command-list">
+                    <div class="command-item">
+                        <div class="command-info">
+                            <div class="command-name">Show current directory</div>
+                            <div class="command-desc">Display the full path of your current location</div>
+                        </div>
+                        <button class="command-copy" onclick="copyToTerminal('pwd')">Copy</button>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-info">
+                            <div class="command-name">List files with details</div>
+                            <div class="command-desc">Show all files including hidden ones with permissions</div>
+                        </div>
+                        <button class="command-copy" onclick="copyToTerminal('ls -la')">Copy</button>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-info">
+                            <div class="command-name">Go to home directory</div>
+                            <div class="command-desc">Return to your personal home folder</div>
+                        </div>
+                        <button class="command-copy" onclick="copyToTerminal('cd ~')">Copy</button>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-info">
+                            <div class="command-name">Create Python script</div>
+                            <div class="command-desc">Make a new Python file with a simple program</div>
+                        </div>
+                        <button class="command-copy" onclick="copyToTerminal('echo \'print(\"Hello, World!\")\' > hello.py')">Copy</button>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-info">
+                            <div class="command-name">Run Python script</div>
+                            <div class="command-desc">Execute a Python program file</div>
+                        </div>
+                        <button class="command-copy" onclick="copyToTerminal('python3 hello.py')">Copy</button>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-info">
+                            <div class="command-name">Check Python version</div>
+                            <div class="command-desc">Verify which Python version is installed</div>
+                        </div>
+                        <button class="command-copy" onclick="copyToTerminal('python3 --version')">Copy</button>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-info">
+                            <div class="command-name">Create a new Rust project</div>
+                            <div class="command-desc">Initialize a new Rust project with Cargo</div>
+                        </div>
+                        <button class="command-copy" onclick="copyToTerminal('cargo new my_project')">Copy</button>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-info">
+                            <div class="command-name">Build and run Rust project</div>
+                            <div class="command-desc">Compile and execute a Rust program</div>
+                        </div>
+                        <button class="command-copy" onclick="copyToTerminal('cd my_project && cargo run')">Copy</button>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-info">
+                            <div class="command-name">Check system processes</div>
+                            <div class="command-desc">Monitor running processes with htop</div>
+                        </div>
+                        <button class="command-copy" onclick="copyToTerminal('htop')">Copy</button>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-info">
+                            <div class="command-name">Display directory structure</div>
+                            <div class="command-desc">Visualize folder hierarchy with tree</div>
+                        </div>
+                        <button class="command-copy" onclick="copyToTerminal('tree')">Copy</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Student Tools Tab -->
+            <div class="tab-content" id="toolsTab">
+                <div class="help-category">
+                    <h4><i class="fas fa-info-circle"></i> Classroom Information</h4>
+                    <div class="help-grid">
+                        <div class="help-card" onclick="copyToTerminal('classroom-info')">
+                            <h5><i class="fas fa-laptop-code"></i> Classroom Info</h5>
+                            <p>Show container details and environment info</p>
+                            <code>classroom-info</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('myip')">
+                            <h5><i class="fas fa-network-wired"></i> My IP Address</h5>
+                            <p>Display container's IP address</p>
+                            <code>myip</code>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-category">
+                    <h4><i class="fas fa-share-alt"></i> Collaboration Tools</h4>
+                    <div class="help-grid">
+                        <div class="help-card" onclick="copyToTerminal('cd /shared')">
+                            <h5><i class="fas fa-folder-share"></i> Shared Folder</h5>
+                            <p>Navigate to shared classroom directory</p>
+                            <code>cd /shared</code>
+                        </div>
+                        <div class="help-card" onclick="showSSHHelp()">
+                            <h5><i class="fas fa-plug"></i> Connect to Classmate</h5>
+                            <p>SSH to another student's container</p>
+                            <code>ssh student@[ip_address]</code>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-category">
+                    <h4><i class="fas fa-magic"></i> Useful Shortcuts</h4>
+                    <div class="help-grid">
+                        <div class="help-card" onclick="copyToTerminal('ll')">
+                            <h5><i class="fas fa-list-alt"></i> Quick List</h5>
+                            <p>Alias for ls -la (detailed file list)</p>
+                            <code>ll</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('cls')">
+                            <h5><i class="fas fa-broom"></i> Clear Screen</h5>
+                            <p>Alias for clear (clean terminal)</p>
+                            <code>cls</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('py')">
+                            <h5><i class="fab fa-python"></i> Python Shortcut</h5>
+                            <p>Alias for python3</p>
+                            <code>py</code>
+                        </div>
+                        <div class="help-card" onclick="copyToTerminal('rb')">
+                            <h5><i class="fas fa-cogs"></i> Rust Build</h5>
+                            <p>Alias for cargo run</p>
+                            <code>rb</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Terminal Area -->
+        <div class="terminal-area">
+            <div class="terminal-header">
+                <div>
+                    <h3><i class="fas fa-terminal"></i> Linux Terminal</h3>
+                    <small id="connectionStatus">Connecting...</small>
+                </div>
+                <div class="terminal-controls">
+                    <button class="control-btn" title="Clear terminal" onclick="clearTerminal()">
+                        <i class="fas fa-eraser"></i>
+                    </button>
+                    <button class="control-btn" title="Increase font size" onclick="changeFontSize(1)">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button class="control-btn" title="Decrease font size" onclick="changeFontSize(-1)">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <button class="control-btn" title="Fullscreen" onclick="toggleFullscreen()">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="terminal-container"></div>
+            
+            <div class="terminal-footer">
+                <div class="shortcut-hint">
+                    <div class="shortcut-item">
+                        <kbd>Tab</kbd> <span>Auto-complete</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl+C</kbd> <span>Cancel command</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl+L</kbd> <span>Clear screen</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>↑/↓</kbd> <span>Command history</span>
+                    </div>
+                </div>
+                <div>
+                    Student: <strong>student</strong> | Password: <strong>student</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- GLOBAL VARIABLES ---
+        let lessons = [];
+        let currentLesson = 0;
+        let term;
+        let ws;
+        let fontSize = 14;
+        
+        // --- DOM ELEMENT REFERENCES ---
+        const welcomeModal = document.getElementById('welcomeModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const skipWelcomeBtn = document.getElementById('skipWelcome');
+        const startLearningBtn = document.getElementById('startLearning');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mainContainer = document.getElementById('mainContainer');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const lessonTitle = document.getElementById('lessonTitle');
+        const lessonText = document.getElementById('lessonText');
+        const currentLessonNum = document.getElementById('currentLessonNum');
+        const totalLessons = document.getElementById('totalLessons');
+        const prevLessonBtn = document.getElementById('prevLessonBtn');
+        const nextLessonBtn = document.getElementById('nextLessonBtn');
+        const connectionStatus = document.getElementById('connectionStatus');
+        
+        // --- WELCOME MODAL ---
+        function showWelcomeModal() {
+            // Check if user has seen the welcome before
+            const hasSeenWelcome = localStorage.getItem('linuxClassroom_welcomeSeen');
+            if (!hasSeenWelcome) {
+                welcomeModal.classList.remove('hidden');
+            } else {
+                welcomeModal.classList.add('hidden');
+            }
+        }
+        
+        function hideWelcomeModal() {
+            welcomeModal.classList.add('hidden');
+            localStorage.setItem('linuxClassroom_welcomeSeen', 'true');
+        }
+        
+        closeModalBtn.addEventListener('click', hideWelcomeModal);
+        skipWelcomeBtn.addEventListener('click', hideWelcomeModal);
+        startLearningBtn.addEventListener('click', hideWelcomeModal);
+        
+        // --- TAB MANAGEMENT ---
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                
+                // Update active button
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Show corresponding tab content
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === `${tabId}Tab`) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+        
+        // --- SIDEBAR TOGGLE ---
+        sidebarToggle.addEventListener('click', () => {
+            mainContainer.classList.toggle('sidebar-hidden');
+            const icon = sidebarToggle.querySelector('i');
+            if (mainContainer.classList.contains('sidebar-hidden')) {
+                icon.className = 'fas fa-bars';
+                sidebarToggle.style.left = '20px';
+            } else {
+                icon.className = 'fas fa-times';
+                sidebarToggle.style.left = '520px';
+            }
+        });
+        
+        // --- LESSON MANAGEMENT ---
+        function showLesson(index) {
+            if (lessons.length === 0) return;
+            
+            const lesson = lessons[index];
+            currentLesson = index;
+            
+            // Update lesson display
+            lessonTitle.textContent = lesson.title;
+            lessonText.innerHTML = lesson.content;
+            currentLessonNum.textContent = index + 1;
+            
+            // Update button states
+            prevLessonBtn.disabled = (index === 0);
+            nextLessonBtn.disabled = (index === lessons.length - 1);
+            
+            // Auto-switch to lessons tab when navigating lessons
+            document.querySelector('[data-tab="lessons"]').click();
+        }
+        
+        function nextLesson() {
+            if (currentLesson < lessons.length - 1) {
+                showLesson(currentLesson + 1);
+            }
+        }
+        
+        function prevLesson() {
+            if (currentLesson > 0) {
+                showLesson(currentLesson - 1);
+            }
+        }
+        
+        // Determine which lessons file to load based on URL
+        function getLessonsFilePath() {
+            const path = window.location.pathname;
+            if (path.includes('/thai')) {
+                return "{{ url_for('static', filename='lessons.json') }}";
+            } else {
+                // Default to English lessons
+                return "{{ url_for('static', filename='lessons_en.json') }}";
+            }
+        }
+        
+        // Load lessons from JSON
+        fetch(getLessonsFilePath())
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                lessons = data;
+                totalLessons.textContent = lessons.length;
+                if (lessons.length > 0) {
+                    showLesson(0);
+                } else {
+                    lessonTitle.textContent = "No Lessons Found";
+                    lessonText.innerHTML = "<p>The lesson file is empty.</p>";
+                }
+            })
+            .catch(error => {
+                console.error('Error loading lessons:', error);
+                lessonTitle.textContent = "Error Loading Lessons";
+                lessonText.innerHTML = "<p>Could not load lesson file. Please check your connection.</p>";
+            });
+        
+        // --- TERMINAL MANAGEMENT ---
+        function initializeTerminal() {
+            term = new Terminal({
+                cursorBlink: true,
+                fontSize: fontSize,
+                fontFamily: 'Consolas, "Courier New", monospace',
+                theme: {
+                    background: '#0d1117',
+                    foreground: '#c9d1d9',
+                    cursor: '#58a6ff',
+                    black: '#0d1117',
+                    red: '#f85149',
+                    green: '#56d364',
+                    yellow: '#e3b341',
+                    blue: '#58a6ff',
+                    magenta: '#bc8cff',
+                    cyan: '#39c5cf',
+                    white: '#b1bac4'
+                },
+                scrollback: 1000,
+                allowTransparency: false
+            });
+            
+            const fitAddon = new FitAddon.FitAddon();
+            term.loadAddon(fitAddon);
+            term.open(document.getElementById('terminal-container'));
+            fitAddon.fit();
+            term.focus();
+            
+            // Connect WebSocket
+            const protocol = (location.protocol === 'https:') ? 'wss://' : 'ws://';
+            const url = protocol + location.host + '/terminal';
+            ws = new WebSocket(url);
+            
+            // WebSocket event handlers
+            ws.onopen = () => {
+                connectionStatus.textContent = "Connected";
+                connectionStatus.style.color = "#2ec4b6";
+            };
+            
+            ws.onmessage = (event) => {
+                term.write(event.data, () => {
+                    term.scrollToBottom();
+                });
+            };
+            
+            ws.onclose = () => {
+                connectionStatus.textContent = "Disconnected";
+                connectionStatus.style.color = "#e71d36";
+                term.write('\r\n\r\n[Connection closed. Please refresh the page.]\r\n');
+                term.setOption('disableStdin', true);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket Error:', error);
+                connectionStatus.textContent = "Connection Error";
+                connectionStatus.style.color = "#e71d36";
+            };
+            
+            // Send user input to server
+            term.onData((data) => {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(data);
+                }
+            });
+            
+            // Handle terminal resize
+            window.addEventListener('resize', () => {
+                fitAddon.fit();
+            });
+        }
+        
+        // --- UTILITY FUNCTIONS ---
+        function copyToTerminal(command) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                // Send the command followed by Enter key
+                ws.send(command + '\r');
+                
+                // Show visual feedback
+                const originalText = term._core._inputHandler._input;
+                term.write('\r\n[Command copied to terminal: ' + command + ']\r\n');
+                
+                // Focus terminal
+                term.focus();
+            }
+        }
+        
+        function clearTerminal() {
+            term.clear();
+            term.write('\r\n');
+        }
+        
+        function changeFontSize(delta) {
+            fontSize = Math.max(10, Math.min(24, fontSize + delta));
+            term.setOption('fontSize', fontSize);
+            
+            // Show feedback
+            term.write(`\r\n[Font size: ${fontSize}px]\r\n`);
+        }
+        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+        
+        function showSSHHelp() {
+            alert("To connect to a classmate's container:\n\n1. Ask them for their container IP (they can run 'myip')\n2. Use: ssh student@[their_ip_address]\n3. Password: student\n\nYou can find your own IP with the 'myip' command.");
+        }
+        
+        // --- KEYBOARD SHORTCUTS ---
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+L to clear terminal
+            if (e.ctrlKey && e.key === 'l') {
+                e.preventDefault();
+                clearTerminal();
+            }
+            
+            // Ctrl+Plus to increase font size
+            if (e.ctrlKey && (e.key === '+' || e.key === '=')) {
+                e.preventDefault();
+                changeFontSize(1);
+            }
+            
+            // Ctrl+Minus to decrease font size
+            if (e.ctrlKey && e.key === '-') {
+                e.preventDefault();
+                changeFontSize(-1);
+            }
+            
+            // Ctrl+Space to toggle sidebar
+            if (e.ctrlKey && e.key === ' ') {
+                e.preventDefault();
+                sidebarToggle.click();
+            }
+        });
+        
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            showWelcomeModal();
+            initializeTerminal();
+            
+            // Set up keyboard shortcuts hint
+            document.addEventListener('keydown', (e) => {
+                if (e.key === '?') {
+                    alert("Keyboard Shortcuts:\n\n" +
+                          "Ctrl+L - Clear terminal\n" +
+                          "Ctrl++/- - Change font size\n" +
+                          "Ctrl+Space - Toggle sidebar\n" +
+                          "Tab - Auto-complete (in terminal)\n" +
+                          "↑/↓ - Command history (in terminal)\n" +
+                          "? - Show this help");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
