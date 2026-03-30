@@ -169,8 +169,8 @@ python app.py
 
 1.  **Clone a repository:**
     ```bash
-    git clone https://github.com/nanofatdog/Linux-Classroom-in-a-Browser.git
-    cd Linux-Classroom-in-a-Browser
+    git clone https://github.com/nanofatdog/Linux-Classroom-pro.git
+    cd inux-Classroom-pro
     ```
 
 2.  **ตั้งค่า Environment และติดตั้ง Libraries:**
