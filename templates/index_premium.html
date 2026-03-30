@@ -1006,14 +1006,6 @@
                     <i class="fas fa-question-circle"></i>
                     <span>Help</span>
                 </button>
-                <button class="tab-button" data-tab="commands">
-                    <i class="fas fa-bolt"></i>
-                    <span>Quick Commands</span>
-                </button>
-                <button class="tab-button" data-tab="tools">
-                    <i class="fas fa-tools"></i>
-                    <span>Student Tools</span>
-                </button>
             </div>
             
             <!-- Tab Content Container -->
@@ -1178,153 +1170,9 @@
                             <div class="help-card-command">whoami</div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Quick Commands Tab -->
-                <div class="tab-content" id="commandsTab">
-                    <div class="lesson-header">
-                        <h2>Quick Commands</h2>
-                        <p>Ready-to-use commands with one-click copy</p>
-                    </div>
                     
-                    <div class="command-list">
-                        <div class="command-item">
-                            <div class="command-icon">
-                                <i class="fas fa-folder-open"></i>
-                            </div>
-                            <div class="command-content">
-                                <div class="command-name">Explore Current Directory</div>
-                                <div class="command-description">List all files with detailed information including hidden files</div>
-                            </div>
-                            <div class="command-action">
-                                <button class="copy-button" onclick="copyToTerminal('ls -la')">
-                                    <i class="fas fa-copy"></i>
-                                    <span>Copy</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="command-item">
-                            <div class="command-icon">
-                                <i class="fas fa-home"></i>
-                            </div>
-                            <div class="command-content">
-                                <div class="command-name">Go to Home Directory</div>
-                                <div class="command-description">Navigate to your personal home folder</div>
-                            </div>
-                            <div class="command-action">
-                                <button class="copy-button" onclick="copyToTerminal('cd ~')">
-                                    <i class="fas fa-copy"></i>
-                                    <span>Copy</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="command-item">
-                            <div class="command-icon">
-                                <i class="fab fa-python"></i>
-                            </div>
-                            <div class="command-content">
-                                <div class="command-name">Create Python Script</div>
-                                <div class="command-description">Make a simple Python program file</div>
-                            </div>
-                            <div class="command-action">
-                                <button class="copy-button" onclick="copyToTerminal('echo \"print(\\\"Hello World!\\\")\" > hello.py')">
-                                    <i class="fas fa-copy"></i>
-                                    <span>Copy</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="command-item">
-                            <div class="command-icon">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="command-content">
-                                <div class="command-name">Run Python Script</div>
-                                <div class="command-description">Execute a Python program</div>
-                            </div>
-                            <div class="command-action">
-                                <button class="copy-button" onclick="copyToTerminal('python3 hello.py')">
-                                    <i class="fas fa-copy"></i>
-                                    <span>Copy</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="command-item">
-                            <div class="command-icon">
-                                <i class="fas fa-project-diagram"></i>
-                            </div>
-                            <div class="command-content">
-                                <div class="command-name">Create Rust Project</div>
-                                <div class="command-description">Initialize a new Rust project with Cargo</div>
-                            </div>
-                            <div class="command-action">
-                                <button class="copy-button" onclick="copyToTerminal('cargo new my_project')">
-                                    <i class="fas fa-copy"></i>
-                                    <span>Copy</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="command-item">
-                            <div class="command-icon">
-                                <i class="fas fa-cogs"></i>
-                            </div>
-                            <div class="command-content">
-                                <div class="command-name">Build & Run Rust</div>
-                                <div class="command-description">Compile and execute a Rust program</div>
-                            </div>
-                            <div class="command-action">
-                                <button class="copy-button" onclick="copyToTerminal('cd my_project && cargo run')">
-                                    <i class="fas fa-copy"></i>
-                                    <span>Copy</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="command-item">
-                            <div class="command-icon">
-                                <i class="fas fa-search"></i>
-                            </div>
-                            <div class="command-content">
-                                <div class="command-name">Find Files</div>
-                                <div class="command-description">Search for files by name or extension</div>
-                            </div>
-                            <div class="command-action">
-                                <button class="copy-button" onclick="copyToTerminal('find . -name \"*.txt\"')">
-                                    <i class="fas fa-copy"></i>
-                                    <span>Copy</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="command-item">
-                            <div class="command-icon">
-                                <i class="fas fa-filter"></i>
-                            </div>
-                            <div class="command-content">
-                                <div class="command-name">Search in Files</div>
-                                <div class="command-description">Find text patterns within files</div>
-                            </div>
-                            <div class="command-action">
-                                <button class="copy-button" onclick="copyToTerminal('grep \"search term\" file.txt')">
-                                    <i class="fas fa-copy"></i>
-                                    <span>Copy</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Student Tools Tab -->
-                <div class="tab-content" id="toolsTab">
-                    <div class="lesson-header">
-                        <h2>Student Tools</h2>
-                        <p>Special commands and utilities for the classroom</p>
-                    </div>
-                    
+                    <!-- Classroom Tools -->
+                    <h3 style="margin: 30px 0 15px; color: var(--text-primary);">Classroom Tools</h3>
                     <div class="help-grid">
                         <div class="help-card" onclick="copyToTerminal('classroom-info')">
                             <div class="help-card-header">
@@ -1393,6 +1241,8 @@
                         </div>
                     </div>
                 </div>
+                
+
             </div>
         </div>
         
@@ -1771,8 +1621,19 @@
                 }
             });
             
-            // Handle paste event
+            // Handle key events for auto-complete and other special keys
             term.onKey(({ key, domEvent }) => {
+                // Handle Tab key for auto-complete - send Tab character to server
+                // The bash shell in the container will handle auto-complete
+                if (domEvent.key === 'Tab') {
+                    domEvent.preventDefault();
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        ws.send('\t'); // Send Tab character
+                    }
+                    return;
+                }
+                
+                // Handle paste event
                 if (domEvent.ctrlKey && domEvent.key === 'v') {
                     // Allow paste
                     return;
@@ -1833,6 +1694,53 @@
             } else {
                 alert('Terminal is not connected. Please wait for connection...');
             }
+        }
+        
+        // ======================
+        // AUTO-COMPLETE FUNCTIONS
+        // ======================
+        function getCurrentLine() {
+            // This is a simplified version - in real implementation,
+            // you would need to track command history and cursor position
+            // For now, we'll return empty and rely on server-side auto-complete
+            return "";
+        }
+        
+        function getAutoCompleteSuggestions(line) {
+            // Common Linux commands for auto-complete
+            const commonCommands = [
+                'ls', 'cd', 'pwd', 'mkdir', 'touch', 'cat', 'cp', 'mv', 'rm',
+                'nano', 'vim', 'python3', 'pip', 'cargo', 'rustc', 'git',
+                'grep', 'find', 'echo', 'chmod', 'chown', 'sudo', 'apt',
+                'curl', 'wget', 'ssh', 'scp', 'ping', 'ifconfig', 'ps',
+                'top', 'htop', 'df', 'du', 'tar', 'gzip', 'unzip'
+            ];
+            
+            const currentWord = line.split(' ').pop().toLowerCase();
+            if (!currentWord) return [];
+            
+            return commonCommands.filter(cmd => 
+                cmd.toLowerCase().startsWith(currentWord)
+            );
+        }
+        
+        function showAutoCompleteSuggestions(suggestions) {
+            if (!term) return;
+            
+            // Show suggestions in terminal
+            term.write('\r\n\x1b[1;33mSuggestions:\x1b[0m\r\n');
+            
+            // Group suggestions for better display
+            const maxPerLine = 4;
+            for (let i = 0; i < suggestions.length; i += maxPerLine) {
+                const line = suggestions.slice(i, i + maxPerLine)
+                    .map(cmd => `  \x1b[1;36m${cmd}\x1b[0m`)
+                    .join('  ');
+                term.write(line + '\r\n');
+            }
+            
+            // Show current prompt again
+            term.write('\x1b[1;37m$\x1b[0m ');
         }
         
         function clearTerminal() {
