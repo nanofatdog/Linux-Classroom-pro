@@ -2,15 +2,12 @@
 
 **Linux Classroom** คือเว็บแอปพลิเคชันที่สร้างสภาพแวดล้อมการเรียนรู้ Linux แบบโต้ตอบได้ (Interactive) โดยตรงบนเว็บเบราว์เซอร์ เหมาะสำหรับใช้เป็นเครื่องมือฝึกสอน, จัด Workshop, หรือให้ผู้ที่สนใจได้ทดลองใช้คำสั่ง Linux, Python, และ Rust ได้อย่างปลอดภัยและสะดวกสบาย โดยไม่ต้องติดตั้งอะไรบนเครื่องคอมพิวเตอร์ของผู้เรียน
 
-## update 2025-09-10
-```bash
- สามารถใช่ IP ของแต่ละ student ได้แล้วครับ !
- และ สามารถ ssh หาเครื่องเพื่อนนักเรียนด้วยกันไ้ดครับ (user : student ,  password : student)
-```
-![image](https://github.com/nanofatdog/Linux-Classroom-in-a-Browser/blob/main/image/demo2.png)
+## update 2026-03-30
+
+![image](https://github.com/nanofatdog/Linux-Classroom-pro/blob/main/image/demo1.png)
 
 แต่ละเซสชันของผู้ใช้จะถูกแยกออกจากกันอย่างสมบูรณ์ใน Docker container ส่วนตัว ทำให้ผู้เรียนสามารถทดลองทุกอย่างได้อย่างอิสระโดยไม่ส่งผลกระทบต่อระบบหลักหรือผู้ใช้งานคนอื่น
-![image](https://github.com/nanofatdog/Linux-Classroom-in-a-Browser/blob/main/image/demo1.png)
+![image](https://github.com/nanofatdog/Linux-Classroom-pro/blob/main/image/demo2.png)
 
 ## 🆕 Premium UI Release (2026-03-30)
 
