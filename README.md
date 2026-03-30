@@ -87,14 +87,14 @@
 ### 🔧 Installation & Upgrade
 ```bash
 # Update existing installation
-cd Linux-Classroom-in-a-Browser
+cd Linux-Classroom-pro
 pip install -r requirements.txt
 python install.py
 python app.py
 
 # Or fresh installation
-git clone https://github.com/nanofatdog/Linux-Classroom-in-a-Browser.git
-cd Linux-Classroom-in-a-Browser
+git clone https://github.com/nanofatdog/Linux-Classroom-pro.git
+cd Linux-Classroom-pro
 pip install -r requirements.txt
 python install.py
 python app.py
